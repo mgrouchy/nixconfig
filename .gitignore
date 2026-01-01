@@ -1,0 +1,22 @@
+# Work-specific configurations (not public)
+modules/shared/config/work.zsh
+
+# Claude Code local settings
+.claude/
+
+# Local overrides
+*.local
+*.local.nix
+
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# macOS
+.DS_Store
+
+# Nix build artifacts
+result
+result-*
