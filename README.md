@@ -67,6 +67,35 @@ nix flake update
 - **Declarative disk management** on NixOS via disko
 - **Shared configuration** between macOS and NixOS
 
+## Customization
+
+To use this config for yourself:
+
+1. **Set your username** in `flake.nix`:
+   ```nix
+   user = "yourusername";
+   ```
+
+2. **Set your git identity** in `modules/shared/home-manager.nix`:
+   ```nix
+   let name = "Your Name";
+       user = "yourusername";
+       email = "you@example.com"; in
+   ```
+
+3. **For NixOS**: Set your hostname in `hosts/nixos/default.nix`:
+   ```nix
+   networking.hostName = "yourhostname";
+   ```
+   Or run `nix run .#apply` which will prompt you for hostname and replace the `%HOST%` placeholder.
+
+4. **Optional**: Add your SSH public key to `hosts/nixos/default.nix` if using NixOS:
+   ```nix
+   sshKeys = [
+     "ssh-ed25519 AAAA..."
+   ];
+   ```
+
 ## License
 
 BSD 3-Clause. See [LICENSE](LICENSE).
