@@ -104,7 +104,7 @@ let name = "Mike Grouchy";
 
       # Auto-attach to zellij in interactive login shells
       # Using exec to replace shell (avoids nesting issues on TUI exit)
-      if [[ -z "$ZELLIJ_SESSION_NAME" && -z "$INSIDE_EMACS" && -z "$VSCODE_INJECTION" && $- == *i* && -o login ]]; then
+      if [[ -z "$ZELLIJ_SESSION_NAME" && -z "$VSCODE_INJECTION" && $- == *i* && -o login ]]; then
         exec zellij attach -c "''${USER}@$(hostname)"
       fi
 
