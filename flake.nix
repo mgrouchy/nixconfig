@@ -81,7 +81,7 @@
       darwinConfigurations = nixpkgs.lib.genAttrs darwinSystems (system:
         darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = inputs // { inputs = inputs; };
+          specialArgs = inputs // { inputs = inputs; inherit user; };
           modules = [
             home-manager.darwinModules.home-manager
             nix-homebrew.darwinModules.nix-homebrew
@@ -105,13 +105,14 @@
 
       nixosConfigurations = nixpkgs.lib.genAttrs linuxSystems (system: nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = inputs // { inputs = inputs; };
+        specialArgs = inputs // { inputs = inputs; inherit user; };
         modules = [
           disko.nixosModules.disko
           home-manager.nixosModules.home-manager {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              extraSpecialArgs = { inherit user; };
               users.${user} = import ./modules/nixos/home-manager.nix;
             };
           }
