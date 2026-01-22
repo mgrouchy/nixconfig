@@ -1,11 +1,6 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, ... }:
 
-let
-  # AI tools from the nix-ai-tools flake
-  ai = inputs."nix-ai-tools".packages.${pkgs.system};
-in
 {
-
   nixpkgs = {
     config = {
       allowUnfree = true;
@@ -23,10 +18,4 @@ in
                   (attrNames (readDir path)));
   };
 
-  # Shared AI tools across Darwin and NixOS (from nix-ai-tools flake)
-  environment.systemPackages = with ai; [
-    claude-code
-    gemini-cli
-    qwen-code
-  ];
 }
