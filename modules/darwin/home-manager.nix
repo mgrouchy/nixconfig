@@ -23,9 +23,7 @@ in
           autoUpdate = true;
           cleanup = "uninstall";
     };
-    brews = [
-      "codex"
-    ];
+    brews = [];
     casks = pkgs.callPackage ./casks.nix {};
 
     # These app IDs are from using the mas CLI app
