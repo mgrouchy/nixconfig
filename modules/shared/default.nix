@@ -12,6 +12,16 @@
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
+
+      # Build performance
+      auto-optimise-store = true;  # deduplicate files in store
+      keep-derivations = true;     # faster rebuilds
+      keep-outputs = true;         # keep build outputs for dev
+      max-jobs = "auto";           # parallel builds
+
+      # UX improvements
+      warn-dirty = false;          # no warnings for dirty git trees
+      fallback = true;             # build locally if binary cache unavailable
     };
     extraOptions = lib.mkDefault ''
       experimental-features = nix-command flakes

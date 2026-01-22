@@ -44,6 +44,11 @@ in {
       allowed-users = [ "${user}" ];
       trusted-users = [ "@admin" "${user}" ];
     };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
   };
 
   # Manages keys and such
