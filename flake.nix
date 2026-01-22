@@ -35,6 +35,9 @@
   outputs = { self, darwin, nix-homebrew, homebrew-bundle, homebrew-core, homebrew-cask, home-manager, nixpkgs, disko, ... } @inputs:
     let
       user = "mgrouchy";
+      # NixOS-specific settings
+      hostName = "arigua";
+      primaryInterface = "eth0";  # change to your interface (run: ip link)
       linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
       darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
       forAllSystems = f: nixpkgs.lib.genAttrs (linuxSystems ++ darwinSystems) f;
@@ -104,7 +107,7 @@
 
       nixosConfigurations = nixpkgs.lib.genAttrs linuxSystems (system: nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = inputs // { inputs = inputs; inherit user; };
+        specialArgs = inputs // { inputs = inputs; inherit user hostName primaryInterface; };
         modules = [
           disko.nixosModules.disko
           home-manager.nixosModules.home-manager {
