@@ -74,5 +74,11 @@ with pkgs; [
   ruff
   ty
 
-  # agentic coding tools (moved to ai-tools.nix via nix-ai-tools flake)
+  # Nix tooling
+  nil           # nix LSP
+  nixfmt-rfc-style  # nix formatter
+
+  # Dev tools
+  lazydocker    # docker TUI
+  mkcert        # local HTTPS certs
 ]
