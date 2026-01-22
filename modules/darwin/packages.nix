@@ -5,11 +5,11 @@ let shared-packages = import ../shared/packages.nix { inherit pkgs; }; in
 shared-packages ++ [
   dockutil
   raycast
-  google-chrome
   chatgpt
   #devtools
   code-cursor
   _1password-cli
+  caddy
 
   
   # A tiny launcher so `ghostty` is on PATH (calls the .app).
