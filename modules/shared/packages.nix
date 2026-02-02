@@ -31,8 +31,9 @@ with pkgs; [
   libfido2
 
   # Cloud-related tools and SDKs
+  awscli2
   # we are installing these via brew, as there is no docker desktop in nix
-  # and sometimes its just easier to use docker desktop to do some things. 
+  # and sometimes its just easier to use docker desktop to do some things.
   #docker
   #docker-compose
 

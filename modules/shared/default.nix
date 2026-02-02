@@ -14,7 +14,6 @@
       ];
 
       # Build performance
-      auto-optimise-store = true;  # deduplicate files in store
       keep-derivations = true;     # faster rebuilds
       keep-outputs = true;         # keep build outputs for dev
       max-jobs = "auto";           # parallel builds
@@ -23,6 +22,7 @@
       warn-dirty = false;          # no warnings for dirty git trees
       fallback = true;             # build locally if binary cache unavailable
     };
+    optimise.automatic = true;  # deduplicate files in store
     extraOptions = lib.mkDefault ''
       experimental-features = nix-command flakes
     '';
