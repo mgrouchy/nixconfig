@@ -1,4 +1,4 @@
-{ config, pkgs, user, ... }:
+{ user, ... }:
 
 {
   imports = [
@@ -7,17 +7,23 @@
   ];
 
   nix = {
-    settings.trusted-users = [ "@admin" "${user}" ];
+    settings.trusted-users = [
+      "@admin"
+      "${user}"
+    ];
     gc = {
       automatic = true;
-      interval = { Weekday = 0; Hour = 2; Minute = 0; };
+      interval = {
+        Weekday = 0;
+        Hour = 2;
+        Minute = 0;
+      };
       options = "--delete-older-than 30d";
     };
   };
 
-
-  environment.systemPackages = with pkgs; [
-  ] ++ (import ../../modules/shared/packages.nix { inherit pkgs; });
+  # Keep CLI packages in Home Manager, avoid duplicate install paths.
+  environment.systemPackages = [ ];
 
   # enable sudo with touchid
   security.pam.services.sudo_local.touchIdAuth = true;

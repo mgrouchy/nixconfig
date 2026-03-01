@@ -1,16 +1,139 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
-let name = "Mike Grouchy";
-    user = "mgrouchy";
-    email = "mgrouchy@gmail.com"; in
+let
+  name = "Mike Grouchy";
+  user = "mgrouchy";
+  email = "mgrouchy@gmail.com";
+  vimPlugins = with pkgs.vimPlugins; [
+    vim-airline
+    vim-airline-themes
+    vim-startify
+    vim-tmux-navigator
+  ];
+  sharedVimConfig = ''
+    "" General
+    set number
+    set history=1000
+    set nocompatible
+    set modelines=0
+    set encoding=utf-8
+    set scrolloff=3
+    set showmode
+    set showcmd
+    set hidden
+    set wildmenu
+    set wildmode=list:longest
+    set cursorline
+    set ttyfast
+    set nowrap
+    set ruler
+    set backspace=indent,eol,start
+    set laststatus=2
+    if has('nvim')
+      set clipboard=unnamedplus
+    else
+      set clipboard=autoselect
+    endif
+
+    " Dir stuff
+    set nobackup
+    set nowritebackup
+    set noswapfile
+    set backupdir=~/.config/vim/backups
+    set directory=~/.config/vim/swap
+
+    " Relative line numbers for easy movement
+    set relativenumber
+    set rnu
+
+    "" Whitespace rules
+    set tabstop=8
+    set shiftwidth=2
+    set softtabstop=2
+    set expandtab
+
+    "" Searching
+    set ignorecase
+    set incsearch
+    set gdefault
+
+    "" Statusbar
+    set nocompatible " Disable vi-compatibility
+    set laststatus=2 " Always show the statusline
+    let g:airline_theme='bubblegum'
+    let g:airline_powerline_fonts = 1
+
+    "" Local keys and such
+    let mapleader=","
+    let maplocalleader=" "
+
+    "" Change cursor on mode
+    :autocmd InsertEnter * set cul
+    :autocmd InsertLeave * set nocul
+
+    "" File-type highlighting and configuration
+    syntax on
+    filetype on
+    filetype plugin on
+    filetype indent on
+
+    "" Paste from clipboard
+    nnoremap <Leader>, "+gP
+
+    "" Copy from clipboard
+    xnoremap <Leader>. "+y
+
+    "" Move cursor by display lines when wrapping
+    nnoremap j gj
+    nnoremap k gk
+
+    "" Map leader-q to quit out of window
+    nnoremap <leader>q :q<cr>
+
+    "" Move around split
+    nnoremap <C-h> <C-w>h
+    nnoremap <C-j> <C-w>j
+    nnoremap <C-k> <C-w>k
+    nnoremap <C-l> <C-w>l
+
+    "" Easier to yank entire line
+    nnoremap Y y$
+
+    "" Move buffers
+    nnoremap <tab> :bnext<cr>
+    nnoremap <S-tab> :bprev<cr>
+
+    "" Like a boss, sudo AFTER opening the file to write
+    cmap w!! w !sudo tee % >/dev/null
+
+    let g:startify_lists = [
+      \ { 'type': 'dir',       'header': ['   Current Directory '. getcwd()] },
+      \ { 'type': 'sessions',  'header': ['   Sessions']       },
+      \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      }
+      \ ]
+
+    let g:startify_bookmarks = [
+      \ '~/Projects',
+      \ '~/Documents',
+      \ ]
+
+    let g:airline_theme='bubblegum'
+    let g:airline_powerline_fonts = 1
+  '';
+in
 {
   # Shared shell configuration
   starship = {
     enable = true;
     enableZshIntegration = true;
     settings = lib.mkMerge [
-      (builtins.fromTOML
-        (builtins.readFile "${pkgs.starship}/share/starship/presets/catppuccin-powerline.toml"
+      (builtins.fromTOML (
+        builtins.readFile "${pkgs.starship}/share/starship/presets/catppuccin-powerline.toml"
       ))
       {
         # here goes my custom configurations
@@ -28,18 +151,18 @@ let name = "Mike Grouchy";
     enable = true;
     enableZshIntegration = true;
   };
-  
+
   zsh = {
     enable = true;
     enableCompletion = true;
     autocd = false;
-    
+
     history = {
       path = "${config.home.homeDirectory}/.history";
       save = 100000;
       size = 100000;
     };
-        # zsh options
+    # zsh options
     setOptions = [
       "APPEND_HISTORY"
       "INC_APPEND_HISTORY"
@@ -120,7 +243,7 @@ let name = "Mike Grouchy";
 
       #fzf to command+r
       eval "$(fzf --zsh)"
-      
+
       # accept autosuggest with ctrl-f
       bindkey '^F' autosuggest-accept
 
@@ -156,7 +279,6 @@ let name = "Mike Grouchy";
       }
     ];
 
-
     # initExtraFirst removed (deprecated); its contents were merged above.
   };
 
@@ -190,7 +312,6 @@ let name = "Mike Grouchy";
         last = "log -1"; # show the commit message of HEAD
         patch = "add --patch"; # add hunks of code interactively
         rom = "rebase origin/master"; # rebase against origin/master
-        fresh = "!git fetch --all && git reset --hard origin/master"; # fetch from all remotes and reset to origin/master
         ismerged = "branch -r --merged master";
       };
 
@@ -202,26 +323,26 @@ let name = "Mike Grouchy";
       };
       pull.rebase = true;
       rebase.autoStash = true;
-      
+
       color = {
         diff = "auto";
         status = "auto";
         branch = "auto";
       };
-      
+
       "color \"branch\"" = {
         current = "yellow reverse";
         remote = "green bold";
         local = "blue bold";
       };
-      
+
       "color \"diff\"" = {
         meta = "blue bold";
         frag = "magenta bold";
         old = "red bold";
         new = "green bold";
       };
-      
+
       push.default = "current";
       web.browser = "open";
       pull.ff = "only";
@@ -237,116 +358,13 @@ let name = "Mike Grouchy";
     };
   };
 
-  vim = {
+  neovim = {
     enable = true;
-    plugins = with pkgs.vimPlugins; [ vim-airline vim-airline-themes vim-startify vim-tmux-navigator ];
-    settings = { ignorecase = true; };
-    extraConfig = ''
-      "" General
-      set number
-      set history=1000
-      set nocompatible
-      set modelines=0
-      set encoding=utf-8
-      set scrolloff=3
-      set showmode
-      set showcmd
-      set hidden
-      set wildmenu
-      set wildmode=list:longest
-      set cursorline
-      set ttyfast
-      set nowrap
-      set ruler
-      set backspace=indent,eol,start
-      set laststatus=2
-      set clipboard=autoselect
-
-      " Dir stuff
-      set nobackup
-      set nowritebackup
-      set noswapfile
-      set backupdir=~/.config/vim/backups
-      set directory=~/.config/vim/swap
-
-      " Relative line numbers for easy movement
-      set relativenumber
-      set rnu
-
-      "" Whitespace rules
-      set tabstop=8
-      set shiftwidth=2
-      set softtabstop=2
-      set expandtab
-
-      "" Searching
-      set incsearch
-      set gdefault
-
-      "" Statusbar
-      set nocompatible " Disable vi-compatibility
-      set laststatus=2 " Always show the statusline
-      let g:airline_theme='bubblegum'
-      let g:airline_powerline_fonts = 1
-
-      "" Local keys and such
-      let mapleader=","
-      let maplocalleader=" "
-
-      "" Change cursor on mode
-      :autocmd InsertEnter * set cul
-      :autocmd InsertLeave * set nocul
-
-      "" File-type highlighting and configuration
-      syntax on
-      filetype on
-      filetype plugin on
-      filetype indent on
-
-      "" Paste from clipboard
-      nnoremap <Leader>, "+gP
-
-      "" Copy from clipboard
-      xnoremap <Leader>. "+y
-
-      "" Move cursor by display lines when wrapping
-      nnoremap j gj
-      nnoremap k gk
-
-      "" Map leader-q to quit out of window
-      nnoremap <leader>q :q<cr>
-
-      "" Move around split
-      nnoremap <C-h> <C-w>h
-      nnoremap <C-j> <C-w>j
-      nnoremap <C-k> <C-w>k
-      nnoremap <C-l> <C-w>l
-
-      "" Easier to yank entire line
-      nnoremap Y y$
-
-      "" Move buffers
-      nnoremap <tab> :bnext<cr>
-      nnoremap <S-tab> :bprev<cr>
-
-      "" Like a boss, sudo AFTER opening the file to write
-      cmap w!! w !sudo tee % >/dev/null
-
-      let g:startify_lists = [
-        \ { 'type': 'dir',       'header': ['   Current Directory '. getcwd()] },
-        \ { 'type': 'sessions',  'header': ['   Sessions']       },
-        \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      }
-        \ ]
-
-      let g:startify_bookmarks = [
-        \ '~/Projects',
-        \ '~/Documents',
-        \ ]
-
-      let g:airline_theme='bubblegum'
-      let g:airline_powerline_fonts = 1
-      '';
-     };
+    plugins = vimPlugins;
+    extraConfig = sharedVimConfig;
+    viAlias = true;
+    vimAlias = true;
+  };
 
   direnv = {
     enable = true;

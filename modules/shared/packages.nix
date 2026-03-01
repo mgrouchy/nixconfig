@@ -1,6 +1,7 @@
 { pkgs }:
 
-with pkgs; [
+with pkgs;
+[
   # General packages for development and system management
   aspell
   aspellDicts.en
@@ -14,7 +15,6 @@ with pkgs; [
   sqlite
   wget
   zip
-  neovim
   zellij
   fzf
   fd
@@ -41,7 +41,7 @@ with pkgs; [
   font-awesome
   hack-font
   noto-fonts
-  noto-fonts-emoji
+  noto-fonts-color-emoji
   meslo-lgs-nf
   vhs
 
@@ -68,7 +68,6 @@ with pkgs; [
   dust
   procs
   bandwhich
-  
 
   # Python packages
   uv
@@ -76,10 +75,10 @@ with pkgs; [
   ty
 
   # Nix tooling
-  nil           # nix LSP
-  nixfmt-rfc-style  # nix formatter
+  nil # nix LSP
+  nixfmt # nix formatter
 
   # Dev tools
-  lazydocker    # docker TUI
-  mkcert        # local HTTPS certs
+  lazydocker # docker TUI
+  mkcert # local HTTPS certs
 ]
