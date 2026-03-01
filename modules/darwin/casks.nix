@@ -5,6 +5,7 @@ _:
   "homebrew/cask/docker"
   "ghostty"
   "linear-linear"
+  "cmux"
 
   # Productivity Tools
   #"raycast"

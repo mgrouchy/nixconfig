@@ -73,6 +73,10 @@ in
       { path = "/System/Applications/Messages.app/"; }
       { path = "/System/Applications/Music.app/"; }
       { path = "/System/Applications/System Settings.app/"; }
+      { path = "/Applications/cmux.app/"; }
+      { path = "/Applications/Obsidian.app/"; }
+      { path = "/Applications/Linear.app/"; }
+      { path = "/Applications/Perplexity.app/"; }
       {
         path = "${config.users.users.${user}.home}/Downloads";
         section = "others";
