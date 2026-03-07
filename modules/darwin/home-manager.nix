@@ -23,7 +23,9 @@ in
           autoUpdate = true;
           cleanup = "uninstall";
     };
-    brews = [];
+    brews = [
+      "dmno-dev/tap/varlock"
+    ];
     casks = pkgs.callPackage ./casks.nix {};
 
     # These app IDs are from using the mas CLI app

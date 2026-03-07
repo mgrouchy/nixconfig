@@ -30,6 +30,10 @@
       url = "github:manaflow-ai/homebrew-cmux";
       flake = false;
     };
+    homebrew-varlock = {
+      url = "github:dmno-dev/homebrew-tap";
+      flake = false;
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -45,6 +49,7 @@
       homebrew-core,
       homebrew-cask,
       homebrew-cmux,
+      homebrew-varlock,
       home-manager,
       nixpkgs,
       disko,
@@ -169,6 +174,7 @@
                   "homebrew/homebrew-cask" = homebrew-cask;
                   "homebrew/homebrew-bundle" = homebrew-bundle;
                   "manaflow-ai/homebrew-cmux" = homebrew-cmux;
+                  "dmno-dev/homebrew-tap" = homebrew-varlock;
                 };
                 mutableTaps = false;
                 autoMigrate = true;
