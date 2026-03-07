@@ -13,6 +13,7 @@ modules/shared/config/work.zsh
 .vscode/
 *.swp
 *~
+.nvimlog
 
 # macOS
 .DS_Store
