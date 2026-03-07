@@ -8,7 +8,7 @@ _:
   "cmux"
 
   # Productivity Tools
-  #"raycast"
+  "raycast"
   "dropbox"
   "elgato-stream-deck"
 
