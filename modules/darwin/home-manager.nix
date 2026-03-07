@@ -1,4 +1,9 @@
-{ config, pkgs, lib, home-manager, user, ... }:
+{
+  config,
+  pkgs,
+  user,
+  ...
+}:
 
 let
   sharedFiles = import ../shared/files.nix { inherit config pkgs; };
@@ -6,7 +11,7 @@ let
 in
 {
   imports = [
-   ./dock
+    ./dock
   ];
 
   # It me
@@ -20,13 +25,13 @@ in
   homebrew = {
     enable = true;
     onActivation = {
-          autoUpdate = true;
-          cleanup = "uninstall";
+      autoUpdate = true;
+      cleanup = "uninstall";
     };
     brews = [
       "dmno-dev/tap/varlock"
     ];
-    casks = pkgs.callPackage ./casks.nix {};
+    casks = pkgs.callPackage ./casks.nix { };
 
     # These app IDs are from using the mas CLI app
     # mas = mac app store
@@ -47,28 +52,36 @@ in
   home-manager = {
     useGlobalPkgs = true;
     backupFileExtension = "backup";
-    users.${user} = { pkgs, config, lib, ... }:{
-      home = {
-        enableNixpkgsReleaseCheck = false;
-        packages = pkgs.callPackage ./packages.nix {};
-        sessionVariables = {
-          EDITOR = "nvim";
-          VISUAL = "nvim";
+    users.${user} =
+      {
+        pkgs,
+        config,
+        lib,
+        ...
+      }:
+      {
+        home = {
+          enableNixpkgsReleaseCheck = false;
+          packages = pkgs.callPackage ./packages.nix { };
+          sessionVariables = {
+            EDITOR = "nvim";
+            VISUAL = "nvim";
+          };
+          file = lib.mkMerge [
+            sharedFiles
+            additionalFiles
+          ];
+          stateVersion = "23.11";
         };
-        file = lib.mkMerge [
-          sharedFiles
-          additionalFiles
-        ];
-        stateVersion = "23.11";
-      };
-      programs = {
-        home-manager.enable = true;
-      } // import ../shared/home-manager.nix { inherit config pkgs lib; };
+        programs = {
+          home-manager.enable = true;
+        }
+        // import ../shared/home-manager.nix { inherit config pkgs lib; };
 
-      # Marked broken Oct 20, 2022 check later to remove this
-      # https://github.com/nix-community/home-manager/issues/3344
-      manual.manpages.enable = false;
-    };
+        # Marked broken Oct 20, 2022 check later to remove this
+        # https://github.com/nix-community/home-manager/issues/3344
+        manual.manpages.enable = false;
+      };
   };
 
   # Fully declarative dock using the latest from Nix Store

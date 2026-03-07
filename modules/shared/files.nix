@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+_:
 
 {
   ".config/zellij/config.kdl".text = ''

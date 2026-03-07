@@ -1,10 +1,17 @@
-{ config, inputs, pkgs, user, hostName, primaryInterface, ... }:
+{
+  pkgs,
+  user,
+  hostName,
+  primaryInterface,
+  ...
+}:
 
 let
   sshKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOk8iAnIaa1deoc7jw8YACPNVka1ZFJxhnU4G74TmS+p"
   ];
-in {
+in
+{
   imports = [
     ../../modules/nixos/disk-config.nix
     ../../modules/shared
@@ -19,7 +26,14 @@ in {
       };
       efi.canTouchEfiVariables = true;
     };
-    initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
+    initrd.availableKernelModules = [
+      "xhci_pci"
+      "ahci"
+      "nvme"
+      "usbhid"
+      "usb_storage"
+      "sd_mod"
+    ];
     # Uncomment for AMD GPU
     # initrd.kernelModules = [ "amdgpu" ];
     kernelPackages = pkgs.linuxPackages_latest;
@@ -33,7 +47,7 @@ in {
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
   networking = {
-    hostName = hostName;
+    inherit hostName;
     useDHCP = false;
     interfaces.${primaryInterface}.useDHCP = true;
   };
@@ -42,7 +56,10 @@ in {
     nixPath = [ "nixos-config=/home/${user}/.local/share/src/nixos-config:/etc/nixos" ];
     settings = {
       allowed-users = [ "${user}" ];
-      trusted-users = [ "@admin" "${user}" ];
+      trusted-users = [
+        "@admin"
+        "${user}"
+      ];
     };
     gc = {
       automatic = true;
@@ -124,7 +141,7 @@ in {
       overrideDevices = true;
 
       settings = {
-        devices = {};
+        devices = { };
         options.globalAnnounceEnabled = false; # Only sync on LAN
       };
     };
@@ -162,8 +179,8 @@ in {
           "class_g = 'i3lock'"
         ];
         round-borders = 3;
-        round-borders-exclude = [];
-        round-borders-rule = [];
+        round-borders-exclude = [ ];
+        round-borders-rule = [ ];
         shadow = true;
         shadow-radius = 8;
         shadow-opacity = 0.4;
@@ -214,12 +231,29 @@ in {
         log-level = "info";
 
         wintypes = {
-          normal = { fade = true; shadow = false; };
-          tooltip = { fade = true; shadow = false; opacity = 0.75; focus = true; full-shadow = false; };
-          dock = { shadow = false; };
-          dnd = { shadow = false; };
-          popup_menu = { opacity = 1.0; };
-          dropdown_menu = { opacity = 1.0; };
+          normal = {
+            fade = true;
+            shadow = false;
+          };
+          tooltip = {
+            fade = true;
+            shadow = false;
+            opacity = 0.75;
+            focus = true;
+            full-shadow = false;
+          };
+          dock = {
+            shadow = false;
+          };
+          dnd = {
+            shadow = false;
+          };
+          popup_menu = {
+            opacity = 1.0;
+          };
+          dropdown_menu = {
+            opacity = 1.0;
+          };
         };
       };
     };
@@ -273,15 +307,17 @@ in {
   # Don't require password for users in `wheel` group for these commands
   security.sudo = {
     enable = true;
-    extraRules = [{
-      commands = [
-       {
-         command = "${pkgs.systemd}/bin/reboot";
-         options = [ "NOPASSWD" ];
-        }
-      ];
-      groups = [ "wheel" ];
-    }];
+    extraRules = [
+      {
+        commands = [
+          {
+            command = "${pkgs.systemd}/bin/reboot";
+            options = [ "NOPASSWD" ];
+          }
+        ];
+        groups = [ "wheel" ];
+      }
+    ];
   };
 
   fonts.packages = with pkgs; [

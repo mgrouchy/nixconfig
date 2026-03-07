@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ lib, ... }:
 
 {
   # Common nix settings (can be overridden per-platform with lib.mkForce)
@@ -14,15 +14,15 @@
       ];
 
       # Build performance
-      keep-derivations = true;     # faster rebuilds
-      keep-outputs = true;         # keep build outputs for dev
-      max-jobs = "auto";           # parallel builds
+      keep-derivations = true; # faster rebuilds
+      keep-outputs = true; # keep build outputs for dev
+      max-jobs = "auto"; # parallel builds
 
       # UX improvements
-      warn-dirty = false;          # no warnings for dirty git trees
-      fallback = true;             # build locally if binary cache unavailable
+      warn-dirty = false; # no warnings for dirty git trees
+      fallback = true; # build locally if binary cache unavailable
     };
-    optimise.automatic = true;  # deduplicate files in store
+    optimise.automatic = true; # deduplicate files in store
     extraOptions = lib.mkDefault ''
       experimental-features = nix-command flakes
     '';
@@ -38,11 +38,15 @@
 
     overlays =
       # Apply each overlay found in the /overlays directory
-      let path = ../../overlays; in with builtins;
-      map (n: import (path + ("/" + n)))
-          (filter (n: match ".*\\.nix" n != null ||
-                      pathExists (path + ("/" + n + "/default.nix")))
-                  (attrNames (readDir path)));
+      let
+        path = ../../overlays;
+      in
+      with builtins;
+      map (n: import (path + ("/" + n))) (
+        filter (n: match ".*\\.nix" n != null || pathExists (path + ("/" + n + "/default.nix"))) (
+          attrNames (readDir path)
+        )
+      );
   };
 
 }

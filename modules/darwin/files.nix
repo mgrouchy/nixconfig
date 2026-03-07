@@ -1,3 +1,3 @@
-{ user, config, pkgs, ... }:
+_:
 
-{}
+{ }
