@@ -69,6 +69,12 @@
         "x86_64-darwin"
       ];
       forAllSystems = f: nixpkgs.lib.genAttrs (linuxSystems ++ darwinSystems) f;
+      nixCheckTargets = builtins.concatStringsSep " " [
+        "flake.nix"
+        "hosts"
+        "modules"
+        "overlays"
+      ];
       devShell =
         system:
         let
@@ -110,15 +116,13 @@
           '';
       mkChecks = system: {
         nixfmt = mkCheck system "nixfmt" ''
-          nixfmt --check flake.nix hosts/darwin/default.nix modules/shared/packages.nix
+          find ${nixCheckTargets} -type f -name '*.nix' -print0 | xargs -0 nixfmt --check
         '';
         deadnix = mkCheck system "deadnix" ''
-          deadnix --fail flake.nix hosts/darwin/default.nix modules/shared/packages.nix
+          find ${nixCheckTargets} -type f -name '*.nix' -print0 | xargs -0 deadnix --fail
         '';
         statix = mkCheck system "statix" ''
-          statix check flake.nix
-          statix check hosts/darwin/default.nix
-          statix check modules/shared/packages.nix
+          find ${nixCheckTargets} -type f -name '*.nix' -print0 | xargs -0 -n1 statix check
         '';
       };
       mkApp = scriptName: system: {
