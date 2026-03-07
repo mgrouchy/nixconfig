@@ -51,6 +51,10 @@ in
       home = {
         enableNixpkgsReleaseCheck = false;
         packages = pkgs.callPackage ./packages.nix {};
+        sessionVariables = {
+          EDITOR = "nvim";
+          VISUAL = "nvim";
+        };
         file = lib.mkMerge [
           sharedFiles
           additionalFiles
