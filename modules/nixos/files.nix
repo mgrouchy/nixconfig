@@ -1,7 +1,11 @@
-{ user, ... }:
+{
+  config,
+  user,
+  ...
+}:
 
 let
-  home = builtins.getEnv "HOME";
+  home = config.home.homeDirectory;
   xdg_configHome = "${home}/.config";
 in
 {
@@ -181,7 +185,7 @@ in
 
       # Take a screenshot with PrintSc
       Print
-           flameshot gui -c -p $HOME/.local/share/img/screenshots
+           flameshot gui -c -p ${home}/.local/share/img/screenshots
 
       # Lock the screen
       ctrl + alt + BackSpace
@@ -228,8 +232,8 @@ in
     text = ''
       #!/bin/sh
 
-      /run/current-system/sw/bin/git -C "$HOME/.local/share/src/nixpkgs" fetch upstream master
-      UPDATES=$(/run/current-system/sw/bin/git -C "$HOME/.local/share/src/nixpkgs" rev-list origin/master..upstream/master --count 2>/dev/null);
+      /run/current-system/sw/bin/git -C "${home}/.local/share/src/nixpkgs" fetch upstream master
+      UPDATES=$(/run/current-system/sw/bin/git -C "${home}/.local/share/src/nixpkgs" rev-list origin/master..upstream/master --count 2>/dev/null);
       /run/current-system/sw/bin/echo " $UPDATES"; # Extra space for presentation with icon
       /run/current-system/sw/bin/sleep 1800;
     '';

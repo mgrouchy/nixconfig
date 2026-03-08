@@ -11,18 +11,32 @@ let
   shared-programs = import ../shared/home-manager.nix { inherit config pkgs lib; };
   shared-files = import ../shared/files.nix { inherit config pkgs; };
 
-  polybar-user_modules = builtins.readFile (
-    pkgs.replaceVars ./config/polybar/user_modules.ini {
-      packages = "${xdg_configHome}/polybar/bin/check-nixos-updates.sh";
-      searchpkgs = "${xdg_configHome}/polybar/bin/search-nixos-updates.sh";
-      calendar = "${xdg_configHome}/polybar/bin/popup-calendar.sh";
-    }
-  );
+  polybar-user_modules =
+    lib.replaceStrings
+      [
+        "@packages@"
+        "@searchpkgs@"
+        "@calendar@"
+      ]
+      [
+        "${xdg_configHome}/polybar/bin/check-nixos-updates.sh"
+        "${xdg_configHome}/polybar/bin/search-nixos-updates.sh"
+        "${xdg_configHome}/polybar/bin/popup-calendar.sh"
+      ]
+      (builtins.readFile ./config/polybar/user_modules.ini);
 
-  polybar-config = pkgs.replaceVars ./config/polybar/config.ini {
-    font0 = "DejaVu Sans:size=12;3";
-    font1 = "feather:size=12;3"; # from overlay
-  };
+  polybar-config = builtins.toFile "polybar-config.ini" (
+    lib.replaceStrings
+      [
+        "@font0@"
+        "@font1@"
+      ]
+      [
+        "DejaVu Sans:size=12;3"
+        "feather:size=12;3"
+      ]
+      (builtins.readFile ./config/polybar/config.ini)
+  );
 
   polybar-modules = builtins.readFile ./config/polybar/modules.ini;
   polybar-bars = builtins.readFile ./config/polybar/bars.ini;
@@ -32,10 +46,10 @@ in
 {
   home = {
     enableNixpkgsReleaseCheck = false;
-    username = "${user}";
+    username = user;
     homeDirectory = "/home/${user}";
     packages = pkgs.callPackage ./packages.nix { };
-    file = shared-files // import ./files.nix { inherit user; };
+    file = shared-files // import ./files.nix { inherit config user; };
     stateVersion = "21.05";
   };
 
