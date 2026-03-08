@@ -80,7 +80,6 @@ in
       code = "/run/current-system/sw/bin/Cursor $1";
       ls = "ls --color=auto";
       cat = "bat";
-      za = ''zellij attach -c "''${USER}@$(hostname)"'';
     };
 
     # Extras: your functions + neofetch on startup
