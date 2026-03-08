@@ -56,10 +56,9 @@
       ...
     }@inputs:
     let
+      inherit (nixpkgs) lib;
       user = "mgrouchy";
-      # NixOS-specific settings
-      hostName = "arigua";
-      primaryInterface = "eth0"; # change to your interface (run: ip link)
+      nixosHost = import ./hosts/nixos/host.nix;
       linuxSystems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -68,13 +67,7 @@
         "aarch64-darwin"
         "x86_64-darwin"
       ];
-      forAllSystems = f: nixpkgs.lib.genAttrs (linuxSystems ++ darwinSystems) f;
-      nixCheckTargets = builtins.concatStringsSep " " [
-        "flake.nix"
-        "hosts"
-        "modules"
-        "overlays"
-      ];
+      forAllSystems = f: lib.genAttrs (linuxSystems ++ darwinSystems) f;
       devShell =
         system:
         let
@@ -110,21 +103,41 @@
           }
           ''
             set -eu
-            cd ${self}
             ${command}
             mkdir -p "$out"
           '';
-      mkChecks = system: {
+      mkLintChecks = system: {
         nixfmt = mkCheck system "nixfmt" ''
-          find ${nixCheckTargets} -type f -name '*.nix' -print0 | xargs -0 nixfmt --check
+          find ${self} -type f -name '*.nix' -print0 | xargs -0 nixfmt --check
         '';
         deadnix = mkCheck system "deadnix" ''
-          find ${nixCheckTargets} -type f -name '*.nix' -print0 | xargs -0 deadnix --fail
+          find ${self} -type f -name '*.nix' -print0 | xargs -0 deadnix --fail
         '';
         statix = mkCheck system "statix" ''
-          find ${nixCheckTargets} -type f -name '*.nix' -print0 | xargs -0 -n1 statix check
+          find ${self} -type f -name '*.nix' -print0 | xargs -0 -n1 statix check
         '';
       };
+      mkCheckApp =
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          targets = [
+            "${self}#checks.${system}.nixfmt"
+            "${self}#checks.${system}.deadnix"
+            "${self}#checks.${system}.statix"
+          ]
+          ++ lib.optionals (lib.elem system darwinSystems) [ "${self}#checks.${system}.darwin-system" ]
+          ++ lib.optionals (lib.elem system nixosHost.supportedSystems) [
+            "${self}#checks.${system}.nixos-system"
+          ];
+          targetArgs = lib.concatStringsSep " " (map lib.escapeShellArg targets);
+        in
+        {
+          type = "app";
+          program = "${(pkgs.writeShellScriptBin "check" ''
+            exec ${pkgs.nix}/bin/nix build --no-link ${targetArgs}
+          '')}/bin/check";
+        };
       mkApp = scriptName: system: {
         type = "app";
         program = "${
@@ -142,12 +155,14 @@
         "copy-keys" = mkApp "copy-keys" system;
         "create-keys" = mkApp "create-keys" system;
         "check-keys" = mkApp "check-keys" system;
+        "check" = mkCheckApp system;
         "install" = mkApp "install" system;
       };
       mkDarwinApps = system: {
         "apply" = mkApp "apply" system;
         "build" = mkApp "build" system;
         "build-switch" = mkApp "build-switch" system;
+        "check" = mkCheckApp system;
         "copy-keys" = mkApp "copy-keys" system;
         "create-keys" = mkApp "create-keys" system;
         "check-keys" = mkApp "check-keys" system;
@@ -156,11 +171,19 @@
     in
     {
       devShells = forAllSystems devShell;
-      checks = forAllSystems mkChecks;
-      apps =
-        nixpkgs.lib.genAttrs linuxSystems mkLinuxApps // nixpkgs.lib.genAttrs darwinSystems mkDarwinApps;
+      checks = forAllSystems (
+        system:
+        mkLintChecks system
+        // lib.optionalAttrs (lib.elem system darwinSystems) {
+          darwin-system = self.darwinConfigurations.${system}.system;
+        }
+        // lib.optionalAttrs (lib.elem system nixosHost.supportedSystems) {
+          nixos-system = self.nixosConfigurations.${system}.config.system.build.toplevel;
+        }
+      );
+      apps = lib.genAttrs linuxSystems mkLinuxApps // lib.genAttrs darwinSystems mkDarwinApps;
 
-      darwinConfigurations = nixpkgs.lib.genAttrs darwinSystems (
+      darwinConfigurations = lib.genAttrs darwinSystems (
         system:
         darwin.lib.darwinSystem {
           inherit system;
@@ -190,17 +213,13 @@
         }
       );
 
-      nixosConfigurations = nixpkgs.lib.genAttrs linuxSystems (
+      nixosConfigurations = lib.genAttrs nixosHost.supportedSystems (
         system:
-        nixpkgs.lib.nixosSystem {
+        lib.nixosSystem {
           inherit system;
-          specialArgs = inputs // {
-            inherit
-              inputs
-              user
-              hostName
-              primaryInterface
-              ;
+          specialArgs = {
+            inherit inputs user;
+            host = nixosHost;
           };
           modules = [
             disko.nixosModules.disko
