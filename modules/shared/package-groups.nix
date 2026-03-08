@@ -1,4 +1,7 @@
-{ pkgs }:
+{
+  pkgs,
+  lib ? pkgs.lib,
+}:
 
 with pkgs;
 rec {
@@ -66,6 +69,23 @@ rec {
     uv
   ];
 
+  lsp = [
+    clang-tools
+    gopls
+    intelephense
+    jdt-language-server
+    kotlin-language-server
+    lua-language-server
+    pyright
+    rust-analyzer
+    sourcekit-lsp
+    typescript
+    typescript-language-server
+  ]
+  ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
+    csharp-ls
+  ];
+
   nixTools = [
     nil
     nix-index
@@ -80,7 +100,7 @@ rec {
     noto-fonts-color-emoji
   ];
 
-  shared = cli ++ observability ++ vcs ++ security ++ cloud ++ dev ++ nixTools ++ fonts;
+  shared = cli ++ observability ++ vcs ++ security ++ cloud ++ dev ++ lsp ++ nixTools ++ fonts;
 
   darwin = [
     _1password-cli
