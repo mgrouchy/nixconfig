@@ -19,6 +19,7 @@ rec {
     ncdu
     openssh
     ripgrep
+    rtk
     sqlite
     tree
     unrar
