@@ -19,7 +19,6 @@ rec {
     ncdu
     openssh
     ripgrep
-    rtk
     sqlite
     tree
     unrar
@@ -65,6 +64,7 @@ rec {
     lazydocker
     mkcert
     nodejs_24
+    podman
     ruff
     ty
     uv

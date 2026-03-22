@@ -31,6 +31,7 @@ in
     };
     brews = [
       "dmno-dev/tap/varlock"
+      "rtk"
     ];
     casks = pkgs.callPackage ./casks.nix { };
 
