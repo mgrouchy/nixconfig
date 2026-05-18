@@ -4,6 +4,7 @@ _:
   # Development Tools
   "homebrew/cask/docker"
   "ghostty"
+  "warp"
   "linear-linear"
   "cmux"
 
