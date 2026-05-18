@@ -74,6 +74,13 @@ in
             additionalFiles
           ];
           stateVersion = "23.11";
+          activation.installQmd = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+            export PATH="${pkgs.nodejs_24}/bin:$PATH"
+            NPM_PREFIX="$HOME/.npm-packages"
+            if ! [ -x "$NPM_PREFIX/bin/qmd" ]; then
+              $DRY_RUN_CMD npm install -g @tobilu/qmd --prefix "$NPM_PREFIX"
+            fi
+          '';
         };
         programs = {
           home-manager.enable = true;

@@ -97,6 +97,7 @@ in
       export PATH=$HOME/.pnpm-packages/bin:$HOME/.pnpm-packages:$PATH
       export PATH=$HOME/.npm-packages/bin:$HOME/bin:$PATH
       export PATH=$HOME/.local/share/bin:$PATH
+      export PATH=$HOME/.local/bin:$PATH
 
       # Remove history data we don't want to see
       export HISTIGNORE="pwd:ls:cd"
